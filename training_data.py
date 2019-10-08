@@ -7,14 +7,13 @@ import pickle
 from face_detecor import detector
 
 
-DATADIR = r"images"
+DATADIR = r"dataset"
 CATEGORIES = ["FaceWithGlasses", "FaceWithoutGlasses"]
-
 training_data = []
-image_size = 100
+image_size = 200
 
 
-def create_training_data():
+def create_training_data(DATADIR, CATEGORIES):
     for category in CATEGORIES:
 
         path = os.path.join(DATADIR, category)
@@ -23,35 +22,37 @@ def create_training_data():
         for img in tqdm(os.listdir(path)):
             try:
                 img_array = detector(os.path.join(path, img))
-                img_array = cv2.resize(img_array, (image_size, image_size))
-                training_data.append([img_array, class_num])
+                img_array = cv2.resize(img_array, (200, 200))
+                training_data.append([img_array, class_num, os.path.join(path, img)])
             except Exception as e:
                 pass
 
+    random.shuffle(training_data)
 
-create_training_data()
+    X = []
+    y = []
+    z = []
 
+    for features, label, path_to_image in training_data:
+        X.append(features)
+        y.append(label)
+        z.append(path_to_image)
 
-random.shuffle(training_data)
+    X = np.array(X)
+    X = np.reshape(X, (-1, 200, 200, 1))
+    y = np.array(y).astype(float)
 
-X = []
-y = []
+    return X, y, z
 
-for features, label in training_data:
-    X.append(features)
-    y.append(label)
+if __name__ == "__main__":
+    X, y, z = create_training_data(DATADIR, CATEGORIES)
 
-X = np.array(X)
+    pickle_out = open(r"saved_data\X.pickle", "wb")
+    pickle.dump(X, pickle_out)
+    pickle_out.close()
 
-# X = X.reshape(-1, 200, 200, 1)
+    pickle_out = open(r"saved_data\y.pickle", "wb")
+    pickle.dump(y, pickle_out)
+    pickle_out.close()
 
-
-pickle_out = open(r"saved_data\X.pickle", "wb")
-pickle.dump(X, pickle_out)
-pickle_out.close()
-
-pickle_out = open(r"saved_data\y.pickle", "wb")
-pickle.dump(y, pickle_out)
-pickle_out.close()
-
-print(len(training_data))
+    print(len(training_data))
