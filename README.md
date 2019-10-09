@@ -13,7 +13,7 @@
 Готовые примеры: 
 python .\main.py --image="images\FaceWithoutGlasses\18.01anne-hathaway.jpg, images\FaceWithoutGlasses\18.pexels-photo-1222271.jpeg, images\FaceWithGlasses\image2 (204).PNG"
 
-python .\predict_dataset.py --dataset_fgolder=test_dataset
+python .\predict_dataset.py --dataset_folder=test_dataset
 
 
 В папке images находятся изображения, которые использовались для тренеровки модели.
